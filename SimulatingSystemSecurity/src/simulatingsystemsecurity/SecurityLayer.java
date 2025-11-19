@@ -7,7 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
-
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.Toolkit;
 import javax.swing.JOptionPane;
 
 public class SecurityLayer {
@@ -22,8 +24,47 @@ public class SecurityLayer {
         for(int i = 0; i <= 4; i++){
             authCode += rng.nextInt(10);
         }
+       
+        System.out.println("Code: " +authCode);
+        showAuthCodeDialog();
+    }
+    
+     private void showAuthCodeDialog() {
+       
+        String message = "Your authentication code is: \n\n" +
+                        "** " + authCode + " **\n\n" +
+                        "Click OK to copy this code to your clipboard.";
         
-        System.out.println("Auth Code: " +authCode);
+      
+        int result = JOptionPane.showConfirmDialog(
+            null, 
+            message, 
+            "Authentication Code", 
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.INFORMATION_MESSAGE
+        );
+        
+      
+        if (result == JOptionPane.OK_OPTION) {
+            copyToClipboard(authCode);
+            JOptionPane.showMessageDialog(null, 
+                "Authentication code copied to clipboard!", 
+                "Success", 
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    
+    private void copyToClipboard(String text) {
+        try {
+            StringSelection stringSelection = new StringSelection(text);
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(stringSelection, null);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, 
+                "Failed to copy to clipboard: " + e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     public void setPassword(String password){
